@@ -1,10 +1,11 @@
 #!/bin/bash
 
 TOOLING_INVENTORY=$1
+OPENSHIFT_INVENTORY=$2
 
 # label openshift nodes, generate an inventory
 cd /root/svt/openshift_tooling/openshift_labeler
-ansible-playbook -vvv -i ${TOOLING_INVENTORY} openshift_label.yml
+ansible-playbook -vvv -i ${OPENSHIFT_INVENTORY} openshift_label.yml
 
 # setup pbench pods in case of containerized pbench, run pbench-ansible in case of non containerized pbench
 if [[ "${CONTAINERIZED}" == "true" ]]; then
