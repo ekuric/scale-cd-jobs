@@ -47,7 +47,7 @@ if [[ "${CONTAINERIZED}" != "true" ]]; then
 	export KUBECONFIG
 	cd /root/svt/openshift_scalability
     	chmod +x /root/svt/openshift_scalability/nodeVertical.sh
-	pbench-user-benchmark -- /root/svt/openshift_scalability/nodeVertical.sh test golang
+	pbench-user-benchmark --pbench-post='/usr/local/bin/scraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -i /root/hosts /root/main.yml -e \'new_file='$benchmark_results_dir/out.json''' -- /root/svt/openshift_scalability/nodeVertical.sh test golang
 	if [[ $? != 0 ]]; then
 		echo "1" > /tmp/test_status
 	else

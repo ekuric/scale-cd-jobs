@@ -14,7 +14,7 @@ fi
  
 
 # setup pbench pods in case of containerized pbench, run pbench-ansible in case of non containerized pbench
-if [[ "${CONTAINERIZED}" == "true" ]]; then
+if [[ "${CONTAINERIZED}" == "true" ]] || [[ "${CONTAINERIZED}" == "TRUE" ]]; then
 	cd /root/svt/openshift_tooling/pbench
 	./setup_pbench_pods.sh
 	if [[ $? != 0 ]]; then
