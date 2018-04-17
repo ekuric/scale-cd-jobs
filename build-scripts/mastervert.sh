@@ -43,13 +43,13 @@ if [[ "${CLEAR_RESULTS}" == "true" ]]; then
 fi
 
 # Run tests	
-if [[ "${CONTAINERIZED}" != "true" ]]; then
+if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; then
 	# Run nodevertical
 	export KUBECONFIG
 	cd /root/svt/openshift_scalability
 	# replace number of projects
 	sed -i "/- num/c  \ \ \ \ - num: $PROJECTS" /root/svt/openshift_scalability/config/golang/pyconfigMasterVertScalePause.yaml
-	pbench-user-benchmark -- /root/svt/openshift_scalability/masterVertical.sh golang
+	pbench-user-benchmark --pbench-post='/usr/local/bin/scraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -i /root/hosts /root/main.yml -e \'new_file='$benchmark_results_dir/out.json''' -- /root/svt/openshift_scalability/masterVertical.sh golang
 	if [[ $? != 0 ]]; then
 		echo "1" > /tmp/test_status
 	else

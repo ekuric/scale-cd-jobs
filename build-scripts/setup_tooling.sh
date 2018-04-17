@@ -1,11 +1,15 @@
 #!/bin/bash
 
 TOOLING_INVENTORY=$1
-OPENSHIFT_INVENTORY=$2
+OPENSHIFT_INVENTORY="$2"
+CONTAINERIZED=$3
+REGISTER_ALL_NODES=$4
 
 # label openshift nodes, generate an inventory
 cd /root/svt/openshift_tooling/openshift_labeler
-ansible-playbook -vvv -i ${OPENSHIFT_INVENTORY} openshift_label.yml
+source /home/cloud-user/keystonerc
+echo "ansible-playbook -vvv -i "${OPENSHIFT_INVENTORY}" openshift_label.yml"
+ansible-playbook -vvv --extra-vars "register_all_nodes=${REGISTER_ALL_NODES}" -i "${OPENSHIFT_INVENTORY}" openshift_label.yml
 if [[ $? != 0 ]]; then
 	echo "1" > /tmp/tooling_status
 else
@@ -28,9 +32,12 @@ else
 	if [[ -d "/root/pbench" ]]; then
 		rm -rf /root/pbench
 	fi
-	git clone https://github.com/distributed-system-analysis/pbench.git /root/pbench
+	#git clone https://github.com/distributed-system-analysis/pbench.git /root/pbench
+	git clone https://github.com/chaitanyaenr/pbench.git /root/pbench
+	git checkout monitor_first_nodes
 	cd /root/pbench/contrib/ansible/openshift/
 	pbench-clear-tools
+	source /home/cloud-user/keystonerc
 	ansible-playbook -vv -i ${TOOLING_INVENTORY} pbench_register.yml
 	echo "Finshed registering tools, labeling nodes"
 	echo "----------------------------------------------------------"
