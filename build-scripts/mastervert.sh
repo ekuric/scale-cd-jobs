@@ -49,7 +49,7 @@ if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; the
 	cd /root/svt/openshift_scalability
 	# replace number of projects
 	sed -i "/- num/c  \ \ \ \ - num: $PROJECTS" /root/svt/openshift_scalability/config/golang/pyconfigMasterVertScalePause.yaml
-	pbench-user-benchmark --pbench-post='/usr/local/bin/scraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -i /root/hosts /root/main.yml -e \'new_file='$benchmark_results_dir/out.json''' -- /root/svt/openshift_scalability/masterVertical.sh golang
+	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e \'new_file='$benchmark_results_dir/out.json''' -- /root/svt/openshift_scalability/masterVertical.sh golang
 	if [[ $? != 0 ]]; then
 		echo "1" > /tmp/test_status
 	else

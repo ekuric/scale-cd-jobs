@@ -43,11 +43,12 @@ fi
 
 # Run tests	
 if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; then
-	# Run nodevertical
+	# Run logging test
 	export KUBECONFIG
 	cd /root/svt/openshift_scalability
-    	chmod +x /root/svt/openshift_scalability/nodeVertical.sh
-	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e \'new_file='$benchmark_results_dir/out.json''' -- /root/svt/openshift_scalability/nodeVertical.sh test golang
+    	chmod +x /root/svt/openshift_scalability/logging.sh
+	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e \'new_file='$benchmark_results_dir/out.json''' -- /root/svt/openshift_scalability/logging.sh golang
+#        pbench-user-benchmark -- /root/svt/openshift_scalability/logging.sh golang
 	if [[ $? != 0 ]]; then
 		echo "1" > /tmp/test_status
 	else
@@ -74,7 +75,7 @@ else
     	cp ${TOOLING_INVENTORY} /root/scale-testing/inventory
     
     	# vars file
-    	sed -i "/^benchmark_type/c benchmark_type=nodevertical" /root/scale-testing/vars
+    	sed -i "/^benchmark_type/c benchmark_type=logging" /root/scale-testing/vars
     
    	# run pbench-controller container
     	./run.sh

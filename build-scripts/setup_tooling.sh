@@ -29,12 +29,10 @@ if [[ "${CONTAINERIZED}" == "true" ]] || [[ "${CONTAINERIZED}" == "TRUE" ]]; the
 else
 	echo "Running pbench ansible"
 	echo "----------------------------------------------------------"
-	if [[ -d "/root/pbench" ]]; then
-		rm -rf /root/pbench
-	fi
-	#git clone https://github.com/distributed-system-analysis/pbench.git /root/pbench
-	git clone https://github.com/chaitanyaenr/pbench.git /root/pbench
-	git checkout monitor_first_nodes
+#	if [[ -d "/root/pbench" ]]; then
+#		rm -rf /root/pbench
+#	fi
+#	git clone https://github.com/distributed-system-analysis/pbench.git /root/pbench
 	cd /root/pbench/contrib/ansible/openshift/
 	pbench-clear-tools
 	source /home/cloud-user/keystonerc
