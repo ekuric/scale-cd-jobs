@@ -56,7 +56,7 @@ if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; the
         fi
         # Move results
 	if [[ "${MOVE_RESULTS}" == "true" ]]; then
-		pbench-move-results
+		pbench-move-results --prefix=logging
 	fi
 else
     	# clone scale-testing repo
