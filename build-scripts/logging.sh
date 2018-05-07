@@ -5,6 +5,7 @@ CONTAINERIZED=$2
 CLEAR_RESULTS=$3
 MOVE_RESULTS=$4
 TOOLING_INVENTORY=$5
+PROJECTS=$6
 
 ## Setup pbench
 if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${SETUP_PBENCH}" == "true" ]]; then
@@ -47,6 +48,9 @@ if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; the
 	export KUBECONFIG
 	cd /root/svt/openshift_scalability
     	chmod +x /root/svt/openshift_scalability/logging.sh
+	if [[ ! -z $projects ]]; then	
+		sed -i "/- num/c  \ \ \ \ - num: $PROJECTS" /root/svt/openshift_scalability/config/golang/logtest.yaml
+	fi
 	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e \'new_file='$benchmark_results_dir/out.json''' -- /root/svt/openshift_scalability/logging.sh golang
 #        pbench-user-benchmark -- /root/svt/openshift_scalability/logging.sh golang
 	if [[ $? != 0 ]]; then

@@ -49,53 +49,59 @@ if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; the
 	# Run nodevertical
 	export KUBECONFIG
 	cd /root/svt/openshift_scalability
-	# replace number of projects for the first run
-	echo "RUNNING FIRST ITERATION OF MASTERVERTICAL WITH $FIRST_RUN_PROJECTS PROJECTS"
-	echo "---------------------------------------------------------------------------"
-	sed -i "/- num/c  \ \ \ \ - num: $FIRST_RUN_PROJECTS" /root/svt/openshift_scalability/config/golang/pyconfigMasterVertScalePause.yaml
-	sed -i "/basename/c  \ \ \ \   basename: clusterp" /root/svt/openshift_scalability/config/golang/pyconfigMasterVertScalePause.yaml
-	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e \'new_file='$benchmark_results_dir/out.json''' -- /root/svt/openshift_scalability/masterVertical.sh golang
-	# Move results
-        if [[ "${MOVE_RESULTS}" == "true" ]]; then
-                pbench-move-results --prefix=mastervert_1000_projects
-        fi
+	if [[ -n $FIRST_RUN_PROJECTS ]]; then
+		# replace number of projects for the first run
+		echo "RUNNING FIRST ITERATION OF MASTERVERTICAL WITH $FIRST_RUN_PROJECTS PROJECTS"
+		echo "---------------------------------------------------------------------------"
+		sed -i "/- num/c  \ \ \ \ - num: $FIRST_RUN_PROJECTS" /root/svt/openshift_scalability/config/golang/pyconfigMasterVertScalePause.yaml
+		sed -i "/basename/c  \ \ \ \   basename: clusterp" /root/svt/openshift_scalability/config/golang/pyconfigMasterVertScalePause.yaml
+		pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e \'new_file='$benchmark_results_dir/out.json''' -- /root/svt/openshift_scalability/masterVertical.sh golang
+		# Move results
+        	if [[ "${MOVE_RESULTS}" == "true" ]]; then
+                	pbench-move-results --prefix=mastervert_"$FIRST_RUN_PROJECTS"_projects
+        	fi
+	fi
 	#echo "Deleting the namespaces created"
 	#for ((n=0;n<$FIRST_RUN_PROJECTS;n++)); do
         #	oc delete project c$n
 	#done
 	#echo "sleeping for 5 min for the cluster to settle"
 	#sleep 10m
-	# replace number of projects for the second  run
-        echo "RUNNING SECOND ITERATION OF MASTERVERTICAL WITH $SECOND_RUN_PROJECTS PROJECTS"
-	echo "-----------------------------------------------------------------------------"
-	sed -i "/- num/c  \ \ \ \ - num: $SECOND_RUN_PROJECTS" /root/svt/openshift_scalability/config/golang/pyconfigMasterVertScalePause.yaml
-	sed -i "/basename/c  \ \ \ \   basename: p" /root/svt/openshift_scalability/config/golang/pyconfigMasterVertScalePause.yaml
-        pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e \'new_file='$benchmark_results_dir/out.json''' -- /root/svt/openshift_scalability/masterVertical.sh golang
-	# Move results
-        if [[ "${MOVE_RESULTS}" == "true" ]]; then
-                pbench-move-results --prefix=mastervert_2000_projects
-        fi
+	if [[ -n "$SECOND_RUN_PROJECTS ]]; then
+		# replace number of projects for the second  run
+        	echo "RUNNING SECOND ITERATION OF MASTERVERTICAL WITH $SECOND_RUN_PROJECTS PROJECTS"
+		echo "-----------------------------------------------------------------------------"
+		sed -i "/- num/c  \ \ \ \ - num: $SECOND_RUN_PROJECTS" /root/svt/openshift_scalability/config/golang/pyconfigMasterVertScalePause.yaml
+		sed -i "/basename/c  \ \ \ \   basename: p" /root/svt/openshift_scalability/config/golang/pyconfigMasterVertScalePause.yaml
+        	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e \'new_file='$benchmark_results_dir/out.json''' -- /root/svt/openshift_scalability/masterVertical.sh golang
+		# Move results
+        	if [[ "${MOVE_RESULTS}" == "true" ]]; then
+                	pbench-move-results --prefix=mastervert_"$SECOND_RUN_PROJECTS"_projects
+        	fi
+	fi
 	#echo "Deleting the namespaces created"
         #for ((n=0;n<$SECOND_RUN_PROJECTS;n++)); do
         #        oc delete project c$n
         #done
         #echo "sleeping for 5 min for the cluster to settle"
         #sleep 10m
-	# replace number of projects for the third run
-        echo "RUNNING THIRD ITERATION OF MASTERVERTICAL WITH $THIRD_RUN_PROJECTS PROJECTS"
-	echo "---------------------------------------------------------------------------"
-	sed -i "/- num/c  \ \ \ \ - num: $THIRD_RUN_PROJECTS" /root/svt/openshift_scalability/config/golang/pyconfigMasterVertScalePause.yaml
-	sed -i "/basename/c  \ \ \ \   basename: loadp" /root/svt/openshift_scalability/config/golang/pyconfigMasterVertScalePause.yaml
-        pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e \'new_file='$benchmark_results_dir/out.json''' -- /root/svt/openshift_scalability/masterVertical.sh golang
-	if [[ $? != 0 ]]; then
-                echo "1" > /tmp/test_status
-        else
-                echo "0" > /tmp/test_status
-        fi
-	# Move results
-        if [[ "${MOVE_RESULTS}" == "true" ]]; then
-                pbench-move-results --prefix=mastervert_4000_projects
-        fi
+	if [[ -n "$THIRD_RUN_PROJECTS" ]]; then
+		# replace number of projects for the third run
+        	echo "RUNNING THIRD ITERATION OF MASTERVERTICAL WITH $THIRD_RUN_PROJECTS PROJECTS"
+		echo "---------------------------------------------------------------------------"
+		sed -i "/- num/c  \ \ \ \ - num: $THIRD_RUN_PROJECTS" /root/svt/openshift_scalability/config/golang/pyconfigMasterVertScalePause.yaml
+		sed -i "/basename/c  \ \ \ \   basename: loadp" /root/svt/openshift_scalability/config/golang/pyconfigMasterVertScalePause.yaml
+        	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e \'new_file='$benchmark_results_dir/out.json''' -- /root/svt/openshift_scalability/masterVertical.sh golang
+		if [[ $? != 0 ]]; then
+                	echo "1" > /tmp/test_status
+        	else
+                	echo "0" > /tmp/test_status
+        	fi
+		# Move results
+        	if [[ "${MOVE_RESULTS}" == "true" ]]; then
+                	pbench-move-results --prefix=mastervert_"$THIRD_RUN_PROJECTS"_projects
+        	fi
+	fi
 	#echo "Deleting the namespaces created"
         #for ((n=0;n<$THIRD_RUN_PROJECTS;n++)); do
         #        oc delete project c$n
