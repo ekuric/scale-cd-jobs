@@ -5,6 +5,7 @@ CONTAINERIZED=$2
 CLEAR_RESULTS=$3
 MOVE_RESULTS=$4
 TOOLING_INVENTORY=$5
+PODS=$6
 
 ## Setup pbench
 if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${SETUP_PBENCH}" == "true" ]]; then
@@ -43,11 +44,11 @@ fi
 
 # Run tests	
 if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; then
-	# Run nodevertical
+	# Run podvertical
 	export KUBECONFIG
 	cd /root/svt/openshift_scalability
-    	chmod +x /root/svt/openshift_scalability/nodeVertical.sh
-	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch=nodevert' -- /root/svt/openshift_scalability/nodeVertical.sh test golang
+    	chmod +x /root/svt/openshift_scalability/podVertical.sh
+	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch=podvertical_15000' -- /root/svt/openshift_scalability/podVertical.sh golang
 	if [[ $? != 0 ]]; then
 		echo "1" > /tmp/test_status
 	else
@@ -55,7 +56,7 @@ if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; the
         fi
         # Move results
 	if [[ "${MOVE_RESULTS}" == "true" ]]; then
-		pbench-move-results --prefix=nodevertical
+		pbench-move-results --prefix=podvertical_15000
 	fi
 else
     	# clone scale-testing repo
@@ -74,7 +75,7 @@ else
     	cp ${TOOLING_INVENTORY} /root/scale-testing/inventory
     
     	# vars file
-    	sed -i "/^benchmark_type/c benchmark_type=nodevertical" /root/scale-testing/vars
+    	sed -i "/^benchmark_type/c benchmark_type=podvertical" /root/scale-testing/vars
     
    	# run pbench-controller container
     	./run.sh
