@@ -5,10 +5,8 @@ CONTAINERIZED=$2
 CLEAR_RESULTS=$3
 MOVE_RESULTS=$4
 TOOLING_INVENTORY=$5
-PODS=$6
+DEPLOYMENTS=$6
 ITERATIONS=$7
-INITIAL_BASENAME=pausepods
-BASENAME=pausepods-iter
 
 ## Setup pbench
 if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${SETUP_PBENCH}" == "true" ]]; then
@@ -45,23 +43,15 @@ if [[ "${CLEAR_RESULTS}" == "true" ]]; then
 	pbench-clear-results
 fi
 
-# Backup config
-cp /root/svt/openshift_scalability/config/golang/cluster-limits-pods-per-namespace.yaml /root/svt/openshift_scalability/config/golang/cluster-limits-pods-per-namespace.yaml.bak
-
-# create namespace
-oc new-project clusterproject0
-
 # Run tests	
 if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; then
-	# Run podvertical
+	# Run deployments per ns
 	export KUBECONFIG
 	cd /root/svt/openshift_scalability
-    	chmod +x /root/svt/openshift_scalability/podVertical.sh
-	sed -i "/- num: 15000/c \ \ \ \ \ \ \ \ \- num: $PODS" /root/svt/openshift_scalability/config/golang/cluster-limits-pods-per-namespace.yaml
+    	chmod +x /root/svt/openshift_scalability/deployments_per_ns.sh
 	for i in $(seq 1 $ITERATIONS); do
-		sed -i "/basename: $INITIAL_BASENAME/c \ \ \ \ \ \ \ \ \ \ \basename: $BASENAME-$i" /root/svt/openshift_scalability/config/golang/cluster-limits-pods-per-namespace.yaml
-#		pbench-user-benchmark -- /root/svt/openshift_scalability/podVertical.sh golang
-		pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch='"podvertical_$PODS"'' -- /root/svt/openshift_scalability/podVertical.sh golang
+		sed -i "/num: 2000/c \ \ \ \ \ \ \ \ \ \ num: $DEPLOYMENTS" /root/svt/openshift_scalability/config/golang/cluster-limits-deployments-per-namespace.yaml
+		pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch='"deployments_per_ns_$DEPLOYMENTS"'' -- /root/svt/openshift_scalability/deployments_per_ns.sh golang
 		if [[ $? != 0 ]]; then
 			echo "1" > /tmp/test_status
 		else
@@ -70,9 +60,9 @@ if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; the
 		
         	# Move results
 		if [[ "${MOVE_RESULTS}" == "true" ]]; then
-			pbench-move-results --prefix=podvertical_"$PODS"
+			pbench-move-results --prefix=deployments_per_ns_"$DEPLOYMENTS"
 		fi
-		INTIAL_BASENAME=$BASENAME-$i
+		DEPLOYMENTS=$((DEPLOYMENTS+DEPLOYMENTS))
 	done
 else
     	# clone scale-testing repo
@@ -91,7 +81,7 @@ else
     	cp ${TOOLING_INVENTORY} /root/scale-testing/inventory
     
     	# vars file
-    	sed -i "/^benchmark_type/c benchmark_type=podvertical" /root/scale-testing/vars
+    	sed -i "/^benchmark_type/c benchmark_type=deployments_per_ns" /root/scale-testing/vars
     
    	# run pbench-controller container
     	./run.sh
@@ -100,11 +90,4 @@ else
 	else
 		echo "0" > /tmp/test_status
         fi
-fi
-
-# Replace the config
-cp /root/svt/openshift_scalability/config/golang/cluster-limits-pods-per-namespace.yaml.bak /root/svt/openshift_scalability/config/golang/cluster-limits-pods-per-namespace.yaml
-
-# Delete the namespace
-oc delete project clusterproject0
-sleep 30
+fiQ

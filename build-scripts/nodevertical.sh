@@ -5,6 +5,7 @@ CONTAINERIZED=$2
 CLEAR_RESULTS=$3
 MOVE_RESULTS=$4
 TOOLING_INVENTORY=$5
+ENVIRONMENT=$6
 
 ## Setup pbench
 if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${SETUP_PBENCH}" == "true" ]]; then
@@ -47,7 +48,7 @@ if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; the
 	export KUBECONFIG
 	cd /root/svt/openshift_scalability
     	chmod +x /root/svt/openshift_scalability/nodeVertical.sh
-	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch=nodevert' -- /root/svt/openshift_scalability/nodeVertical.sh test golang
+	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch=nodevert' -- /root/svt/openshift_scalability/nodeVertical.sh test golang "$ENVIRONMENT"
 	if [[ $? != 0 ]]; then
 		echo "1" > /tmp/test_status
 	else
