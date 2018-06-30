@@ -6,7 +6,6 @@ CLEAR_RESULTS=$3
 MOVE_RESULTS=$4
 TOOLING_INVENTORY=$5
 DEPLOYMENTS=$6
-ITERATIONS=$7
 
 ## Setup pbench
 if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${SETUP_PBENCH}" == "true" ]]; then
@@ -43,27 +42,30 @@ if [[ "${CLEAR_RESULTS}" == "true" ]]; then
 	pbench-clear-results
 fi
 
+# Backup config
+cp /root/svt/openshift_scalability/config/golang/cluster-limits-deployments-per-namespace.yaml /root/svt/openshift_scalability/config/golang/cluster-limits-deployments-per-namespace.yaml.bak
+
+# create namespace
+oc new-project clusterproject0
+
 # Run tests	
 if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; then
 	# Run deployments per ns
 	export KUBECONFIG
 	cd /root/svt/openshift_scalability
     	chmod +x /root/svt/openshift_scalability/deployments_per_ns.sh
-	for i in $(seq 1 $ITERATIONS); do
-		sed -i "/num: 2000/c \ \ \ \ \ \ \ \ \ \ num: $DEPLOYMENTS" /root/svt/openshift_scalability/config/golang/cluster-limits-deployments-per-namespace.yaml
-		pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch='"deployments_per_ns_$DEPLOYMENTS"'' -- /root/svt/openshift_scalability/deployments_per_ns.sh golang
-		if [[ $? != 0 ]]; then
-			echo "1" > /tmp/test_status
-		else
-			echo "0" > /tmp/test_status
-        	fi
+	sed -i "/num: 20000/c \ \ \ \ \ \ \ \ \ \ num: $DEPLOYMENTS" /root/svt/openshift_scalability/config/golang/cluster-limits-deployments-per-namespace.yaml
+	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch='"deployments_per_ns_$DEPLOYMENTS"'' -- /root/svt/openshift_scalability/deployments_per_ns.sh golang
+	if [[ $? != 0 ]]; then
+		echo "1" > /tmp/test_status
+	else
+		echo "0" > /tmp/test_status
+        fi
 		
-        	# Move results
-		if [[ "${MOVE_RESULTS}" == "true" ]]; then
-			pbench-move-results --prefix=deployments_per_ns_"$DEPLOYMENTS"
-		fi
-		DEPLOYMENTS=$((DEPLOYMENTS+DEPLOYMENTS))
-	done
+        # Move results
+	if [[ "${MOVE_RESULTS}" == "true" ]]; then
+		pbench-move-results --prefix=deployments_per_ns_"$DEPLOYMENTS"
+	fi
 else
     	# clone scale-testing repo
     	if [[ -d "/root/scale-testing" ]]; then
@@ -90,4 +92,10 @@ else
 	else
 		echo "0" > /tmp/test_status
         fi
-fiQ
+fi
+
+# Restore config
+cp /root/svt/openshift_scalability/config/golang/cluster-limits-deployments-per-namespace.yaml.bak /root/svt/openshift_scalability/config/golang/cluster-limits-deployments-per-namespace.yaml
+
+# Cleanup namespace
+oc delete project clusterproject0
