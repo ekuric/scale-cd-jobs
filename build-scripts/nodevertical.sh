@@ -85,3 +85,4 @@ else
 		echo "0" > /tmp/test_status
         fi
 fi
+sleep 60

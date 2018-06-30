@@ -30,10 +30,10 @@ else
 	echo "Running pbench ansible"
 	echo "----------------------------------------------------------"
 	#### use a local pbench copy till the pprof fix is merged
-	#if [[ -d "/root/pbench" ]]; then
-	#	rm -rf /root/pbench
-	#fi
-	#git clone https://github.com/distributed-system-analysis/pbench.git /root/pbench
+	if [[ -d "/root/pbench" ]]; then
+		rm -rf /root/pbench
+	fi
+	git clone https://github.com/distributed-system-analysis/pbench.git /root/pbench
 	cd /root/pbench/contrib/ansible/openshift/
 	pbench-clear-tools
 	source /home/cloud-user/keystonerc
