@@ -99,3 +99,6 @@ cp /root/svt/openshift_scalability/config/golang/cluster-limits-deployments-per-
 
 # Cleanup namespace
 oc delete project clusterproject0
+
+# Sleep for the cluster to settle
+sleep 5m
