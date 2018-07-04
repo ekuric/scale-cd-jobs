@@ -107,4 +107,4 @@ cp /root/svt/openshift_scalability/config/golang/cluster-limits-pods-per-namespa
 
 # Delete the namespace
 oc delete project clusterproject0
-sleep 30
+sleep 10m
