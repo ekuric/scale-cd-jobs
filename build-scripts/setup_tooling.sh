@@ -7,7 +7,6 @@ REGISTER_ALL_NODES=$4
 
 # label openshift nodes, generate an inventory
 cd /root/svt/openshift_tooling/openshift_labeler
-source /home/cloud-user/keystonerc
 echo "ansible-playbook -vvv -i "${OPENSHIFT_INVENTORY}" openshift_label.yml"
 ansible-playbook -vvv --extra-vars "register_all_nodes=${REGISTER_ALL_NODES}" -i "${OPENSHIFT_INVENTORY}" openshift_label.yml
 if [[ $? != 0 ]]; then
@@ -36,7 +35,6 @@ else
 	git clone https://github.com/distributed-system-analysis/pbench.git /root/pbench
 	cd /root/pbench/contrib/ansible/openshift/
 	pbench-clear-tools
-	source /home/cloud-user/keystonerc
 	ansible-playbook -vv -i ${TOOLING_INVENTORY} pbench_register.yml
 	echo "Finshed registering tools, labeling nodes"
 	echo "----------------------------------------------------------"
