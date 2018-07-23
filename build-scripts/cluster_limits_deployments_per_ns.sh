@@ -55,7 +55,7 @@ if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; the
 	cd /root/svt/openshift_scalability
     	chmod +x /root/svt/openshift_scalability/deployments_per_ns.sh
 	sed -i "/num: 2000/c \ \ \ \ \ \ \ \ \ \ num: $DEPLOYMENTS" /root/svt/openshift_scalability/config/golang/cluster-limits-deployments-per-namespace.yaml
-	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch='"deployments_per_ns_$DEPLOYMENTS"'' -- /root/svt/openshift_scalability/deployments_per_ns.sh golang
+	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vvv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch='"deployments_per_ns_$DEPLOYMENTS"'' -- /root/svt/openshift_scalability/deployments_per_ns.sh golang
 	if [[ $? != 0 ]]; then
 		echo "1" > /tmp/test_status
 	else

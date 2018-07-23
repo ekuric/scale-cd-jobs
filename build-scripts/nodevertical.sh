@@ -49,7 +49,7 @@ if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; the
 	cd /root/svt/openshift_scalability
     	chmod +x /root/svt/openshift_scalability/nodeVertical.sh
 	cp /root/svt/openshift_scalability/config/golang/nodeVertical-labeled-nodes.yaml /root/svt/openshift_scalability/config/golang/nodeVertical-labeled-nodes.yaml.bak
-	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch=nodevert' -- /root/svt/openshift_scalability/nodeVertical.sh test golang "$ENVIRONMENT"
+	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vvv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch=nodevert' -- /root/svt/openshift_scalability/nodeVertical.sh test golang "$ENVIRONMENT"
 	if [[ $? != 0 ]]; then
 		echo "1" > /tmp/test_status
 	else
