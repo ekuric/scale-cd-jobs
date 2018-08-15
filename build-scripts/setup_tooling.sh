@@ -9,22 +9,11 @@ REGISTER_ALL_NODES=$4
 cd /root/svt/openshift_tooling/openshift_labeler
 echo "ansible-playbook -vvv -i "${OPENSHIFT_INVENTORY}" openshift_label.yml"
 ansible-playbook -vvv --extra-vars "register_all_nodes=${REGISTER_ALL_NODES}" -i "${OPENSHIFT_INVENTORY}" openshift_label.yml
-if [[ $? != 0 ]]; then
-	echo "1" > /tmp/tooling_status
-else
-        echo "0" > /tmp/tooling_status
-fi
- 
 
 # setup pbench pods in case of containerized pbench, run pbench-ansible in case of non containerized pbench
 if [[ "${CONTAINERIZED}" == "true" ]] || [[ "${CONTAINERIZED}" == "TRUE" ]]; then
 	cd /root/svt/openshift_tooling/pbench
 	./setup_pbench_pods.sh
-	if [[ $? != 0 ]]; then
-        	echo "1" > /tmp/tooling_status
-	else
-        	echo "0" > /tmp/tooling_status
-	fi
 else
 	echo "Running pbench ansible"
 	echo "----------------------------------------------------------"

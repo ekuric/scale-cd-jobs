@@ -95,11 +95,6 @@ if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; the
 		sed -i "/basename/c  \ \ \ \   basename: loadp" /root/svt/openshift_scalability/config/golang/pyconfigMasterVertScalePause.yaml
 		TOTAL_PROJECTS=$((TOTAL_PROJECTS+THIRD_RUN_PROJECTS))
         	pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch='"mastervert_$TOTAL_PROJECTS"'' -- /root/svt/openshift_scalability/masterVertical.sh golang
-		if [[ $? != 0 ]]; then
-                	echo "1" > /tmp/test_status
-        	else
-                	echo "0" > /tmp/test_status
-        	fi
 		# Move results
         	if [[ "${MOVE_RESULTS}" == "true" ]]; then
                 	pbench-move-results --prefix=mastervert_"$TOTAL_PROJECTS"_projects
@@ -112,10 +107,6 @@ if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; the
         #echo "sleeping for 5 min for the cluster to settle"
         #sleep 10m
 
-        # Move results
-#	if [[ "${MOVE_RESULTS}" == "true" ]]; then
-#		pbench-move-results --prefix=mastervert_1000_projects
-#	fi
 else
     	# clone scale-testing repo
     	if [[ -d "/root/scale-testing" ]]; then
@@ -137,9 +128,4 @@ else
     
    	# run pbench-controller container
     	./run.sh
-        if [[ $? != 0 ]]; then
-		echo "1" > /tmp/test_status
-	else
-		echo "0" > /tmp/test_status
-        fi
 fi
