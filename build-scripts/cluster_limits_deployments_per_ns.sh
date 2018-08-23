@@ -87,6 +87,4 @@ fi
 cp /root/svt/openshift_scalability/config/golang/cluster-limits-deployments-per-namespace.yaml.bak /root/svt/openshift_scalability/config/golang/cluster-limits-deployments-per-namespace.yaml
 
 # Cleanup namespace
-oc delete project clusterproject0
-# we won't need this for 3.11 as we can use the --wait option which is going to be introduced
-sleep 20m
+oc delete project --wait=true clusterproject0

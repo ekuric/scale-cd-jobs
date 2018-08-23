@@ -78,6 +78,3 @@ fi
 
 # Replace the config file with the original one
 cp /root/svt/openshift_scalability/config/golang/nodeVertical-labeled-nodes.yaml.bak /root/svt/openshift_scalability/config/golang/nodeVertical-labeled-nodes.yaml
-
-# Sleep for sometime for the cluster to settle
-sleep 3m
