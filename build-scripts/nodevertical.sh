@@ -78,3 +78,6 @@ fi
 
 # Replace the config file with the original one
 cp /root/svt/openshift_scalability/config/golang/nodeVertical-labeled-nodes.yaml.bak /root/svt/openshift_scalability/config/golang/nodeVertical-labeled-nodes.yaml
+
+# cleanup
+oc delete project clusterproject0
