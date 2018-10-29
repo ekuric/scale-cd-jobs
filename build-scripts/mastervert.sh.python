@@ -85,15 +85,28 @@ if [[ "${CONTAINERIZED}" != "true" ]] && [[ "${CONTAINERIZED}" != "TRUE" ]]; the
 	
 	# Delete all the projects created by the test
 	echo "Deleting the namespaces created"
-        for ((n=0;n<$FIRST_RUN_PROJECTS;n++)); do
-                oc delete project --wait=false $FIRST_RUN_PROJECTS_TAG$n
-        done
-	for ((n=0;n<$SECOND_RUN_PROJECTS;n++)); do
-                oc delete project --wait=false $SECOND_RUN_PROJECTS_TAG$n
-        done
-	for ((n=0;n<$THIRD_RUN_PROJECTS;n++)); do
-                oc delete project --wait=false $THIRD_RUN_PROJECTS_TAG$n
-        done
+	OCVER=$(oc version | grep v3.11 | cut -d' ' -f2 | head -1 | cut -d'.' -f1,2)
+	if [[ $OCVER == "v3.11" ]]; then 
+		for ((n=0;n<$FIRST_RUN_PROJECTS;n++)); do
+                	oc delete project --wait=false $FIRST_RUN_PROJECTS_TAG$n
+        	done
+		for ((n=0;n<$SECOND_RUN_PROJECTS;n++)); do
+                	oc delete project --wait=false $SECOND_RUN_PROJECTS_TAG$n
+       		done
+		for ((n=0;n<$THIRD_RUN_PROJECTS;n++)); do
+                	oc delete project --wait=false $THIRD_RUN_PROJECTS_TAG$n
+        	done
+	else
+		for ((n=0;n<$FIRST_RUN_PROJECTS;n++)); do
+			oc delete project $FIRST_RUN_PROJECTS_TAG$n
+		done 
+		for ((n=0;n<$SECOND_RUN_PROJECTS;n++)); do
+			oc delete project $SECOND_RUN_PROJECTS_TAG$n
+		done 
+		for ((n=0;n<$THIRD_RUN_PROJECTS;n++)); do
+			oc delete project $THIRD_RUN_PROJECTS_TAG$n
+		done 
+	fi 
 else
     	# clone scale-testing repo
     	if [[ -d "/root/scale-testing" ]]; then
