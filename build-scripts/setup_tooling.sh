@@ -24,7 +24,7 @@ git clone https://github.com/chaitanyaenr/pbench.git /root/pbench
 cd /root/pbench/contrib/ansible/openshift/
 git checkout ports
 pbench-clear-tools
-ansible-playbook -vv -i ${TOOLING_INVENTORY} pbench_register.yml
+ansible-playbook -vvv -i ${TOOLING_INVENTORY} pbench_register.yml
 echo "Finshed registering tools, labeling nodes"
 echo "----------------------------------------------------------"
 echo "List of tools registered:"
