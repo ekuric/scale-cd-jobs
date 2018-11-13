@@ -1,16 +1,24 @@
 #!/bin/bash
 
 svt_repo_location=/root
-controller_namespace=default
+controller_namespace=controller
+properties_path=/root/properties
 counter_time=5
 wait_time=25
-set -x
+
 # Cleanup
 function cleanup() {
-	oc delete -f $svt_repo_location/svt/openshift_templates/performance_monitoring/pbench/pbench-controller-job.yml -n $controller_namespace
+	oc delete -f $svt_repo_location/svt/openshift_templates/performance_monitoring/scale-ci-controller/controller-job.yml -n $controller_namespace
 	#oc delete -f $svt_repo_location/svt/openshift_templates/performance_monitoring/pbench/scale-config.yml -n $controller_namespace
-	oc delete cm tooling-config
-	sleep $wait_time
+	oc delete cm tooling-config -n $controller_namespace
+	#sleep $wait_time
+	oc delete project $controller_namespace
+}
+
+# Create a service account and add it to the privileged scc
+function create_service_account() {
+        oc create serviceaccount useroot -n $controller_namespace
+        oc adm policy add-scc-to-user privileged -z useroot -n $controller_namespace
 }
 
 # Ensure that the host has svt repo cloned
@@ -28,10 +36,18 @@ if [[ $? == 0 ]]; then
 	cleanup
 fi
 
-# Create configmap and job
-oc create configmap tooling-config --from-env-file=/root/properties -n $controller_namespace
+oc project $controller_namespace &>/dev/null
+if [[ $? == 0 ]]; then
+        echo "Looks like the $controller_namespace already exists, deleting it"
+        oc delete project $controller_namespace
+fi
+
+# Create controller ns, configmap and run the job
+oc create -f $svt_repo_location/svt/openshift_templates/performance_monitoring/scale-ci-controller/controller-ns.yml
+create_service_account
+oc create configmap tooling-config --from-env-file=$properties_path -n $controller_namespace
 #oc create -f $svt_repo_location/svt/openshift_templates/performance_monitoring/pbench/scale-config.yml -n $controller_namespace
-oc create -f $svt_repo_location/svt/openshift_templates/performance_monitoring/pbench/pbench-controller-job.yml -n $controller_namespace
+oc create -f $svt_repo_location/svt/openshift_templates/performance_monitoring/scale-ci-controller/controller-job.yml -n $controller_namespace
 sleep $wait_time
 controller_pod=$(oc get pods -n $controller_namespace | grep "controller" | awk '{print $1}')
 counter=0
