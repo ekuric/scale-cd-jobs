@@ -5,6 +5,11 @@ OPENSHIFT_INVENTORY="$2"
 CONTAINERIZED=$3
 REGISTER_ALL_NODES=$4
 
+if [[ ! -d "/root/svt" ]]; then
+	git clone https://github.com/chaitanyaenr/svt.git /root/svt
+	cd /root/svt
+	git checkout containerozed_tooling
+fi
 # label openshift nodes, generate an inventory
 cd /root/svt/openshift_tooling/openshift_labeler
 echo "ansible-playbook -vvv -i "${OPENSHIFT_INVENTORY}" openshift_label.yml"

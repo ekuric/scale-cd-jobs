@@ -46,7 +46,10 @@ fi
 cp /root/svt/openshift_scalability/config/golang/cluster-limits-deployments-per-namespace.yaml /root/svt/openshift_scalability/config/golang/cluster-limits-deployments-per-namespace.yaml.bak
 
 # create namespace
-oc new-project clusterproject0
+#oc new-project clusterproject0
+
+# Switch to default ns
+oc project default
 
 # Run deployments per ns
 export KUBECONFIG

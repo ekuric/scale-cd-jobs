@@ -48,7 +48,8 @@ if [[ "${CLEAR_RESULTS}" == "true" ]]; then
 	pbench-clear-results
 fi
 
-# Run tests	
+# Run tests
+oc project default
 export KUBECONFIG
 cd /root/svt/openshift_scalability
 # replace number of projects for the first run

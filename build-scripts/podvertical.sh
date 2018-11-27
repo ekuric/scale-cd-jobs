@@ -51,6 +51,9 @@ cp /root/svt/openshift_scalability/config/golang/cluster-limits-pods-per-namespa
 # create namespace
 oc new-project clusterproject0
 
+# Switch to default ns
+oc project default
+
 # Run podvertical
 export KUBECONFIG
 cd /root/svt/openshift_scalability
@@ -72,3 +75,4 @@ cp /root/svt/openshift_scalability/config/golang/cluster-limits-pods-per-namespa
 
 # Delete the namespace
 oc delete project clusterproject0
+
