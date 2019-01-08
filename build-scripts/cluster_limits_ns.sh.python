@@ -8,6 +8,7 @@ TOOLING_INVENTORY=$5
 FIRST_RUN_PROJECTS=$6
 SECOND_RUN_PROJECTS=$7
 THIRD_RUN_PROJECTS=$8
+MODE=$9
 TOTAL_PROJECTS=$FIRST_RUN_PROJECTS
 FIRST_RUN_PROJECTS_TAG=clusterp
 SECOND_RUN_PROJECTS_TAG=clp
@@ -57,7 +58,7 @@ echo "RUNNING FIRST ITERATION OF NS_PER_CLUSTER WITH $FIRST_RUN_PROJECTS PROJECT
 echo "---------------------------------------------------------------------------"
 sed -i "/- num/c  \  - num: $FIRST_RUN_PROJECTS" /root/svt/openshift_scalability/config/cluster-limits-namespaces.yaml 
 sed -i "/basename/c  \    basename: $FIRST_RUN_PROJECTS_TAG" /root/svt/openshift_scalability/config/cluster-limits-namespaces.yaml 
-pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vvv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch='"ns_per_cluster_$FIRST_RUN_PROJECTS"'' -- /root/svt/openshift_scalability/cluster-limits-namespaces.sh python
+pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vvv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch='"ns_per_cluster_$FIRST_RUN_PROJECTS"'' -- /root/svt/openshift_scalability/cluster-limits-namespaces.sh python $MODE
 #pbench-user-benchmark -- /root/svt/openshift_scalability/cluster-limits-namespaces.sh python
 # Move results
 if [[ "${MOVE_RESULTS}" == "true" ]]; then
@@ -69,7 +70,7 @@ echo "--------------------------------------------------------------------------
 sed -i "/- num/c  \  - num: $SECOND_RUN_PROJECTS" /root/svt/openshift_scalability/config/cluster-limits-namespaces.yaml 
 sed -i "/basename/c  \    basename: $SECOND_RUN_PROJECTS_TAG" /root/svt/openshift_scalability/config/cluster-limits-namespaces.yaml
 TOTAL_PROJECTS=$((FIRST_RUN_PROJECTS+SECOND_RUN_PROJECTS))
-pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vvv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch='"ns_per_cluster_$TOTAL_PROJECTS"'' -- /root/svt/openshift_scalability/cluster-limits-namespaces.sh python
+pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vvv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json -e git_test_branch='"ns_per_cluster_$TOTAL_PROJECTS"'' -- /root/svt/openshift_scalability/cluster-limits-namespaces.sh python $MODE
 #pbench-user-benchmark -- /root/svt/openshift_scalability/cluster-limits-namespaces.sh python
 # Move results
 if [[ "${MOVE_RESULTS}" == "true" ]]; then
@@ -81,7 +82,7 @@ echo "--------------------------------------------------------------------------
 sed -i "/- num/c  \  - num: $THIRD_RUN_PROJECTS" /root/svt/openshift_scalability/config/cluster-limits-namespaces.yaml 
 sed -i "/basename/c  \    basename: $THIRD_RUN_PROJECTS_TAG" /root/svt/openshift_scalability/config/cluster-limits-namespaces.yaml 
 TOTAL_PROJECTS=$((TOTAL_PROJECTS+THIRD_RUN_PROJECTS))
-pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vvv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json  -e git_test_branch='"ns_per_cluster_$TOTAL_PROJECTS"'' -- /root/svt/openshift_scalability/cluster-limits-namespaces.sh python
+pbench-user-benchmark --pbench-post='/usr/local/bin/pbscraper -i $benchmark_results_dir/tools-default -o $benchmark_results_dir; ansible-playbook -vvv -i /root/svt/utils/pbwedge/hosts /root/svt/utils/pbwedge/main.yml -e new_file=$benchmark_results_dir/out.json  -e git_test_branch='"ns_per_cluster_$TOTAL_PROJECTS"'' -- /root/svt/openshift_scalability/cluster-limits-namespaces.sh python $MODE
 #pbench-user-benchmark -- /root/svt/openshift_scalability/cluster-limits-namespaces.sh python
 # Move results
 if [[ "${MOVE_RESULTS}" == "true" ]]; then
@@ -100,4 +101,8 @@ for ((n=0;n<$THIRD_RUN_PROJECTS;n++)); do
 	oc delete project --wait=false $THIRD_RUN_PROJECTS_TAG$n
 done
 echo "Waiting for the cluster to settle"
-echo "sleep 3000"
+if [[ "$MODE" == "CI" ]]; then
+	sleep 30
+else
+	echo "sleep 3000"
+fi
